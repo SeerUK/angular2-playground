@@ -47,7 +47,7 @@ function buildConfiguration() {
             // Typescript
             {
                 test: /\.ts$/,
-                loaders: [ "awesome-typescript-loader", "angular2-template-loader" ]
+                loaders: [ "awesome-typescript", "angular2-template" ]
             },
 
             // CSS
@@ -55,6 +55,18 @@ function buildConfiguration() {
                 test: /\.css$/,
                 loader: ExtractTextPlugin.extract("style", "css?sourceMap!postcss"),
                 exclude: path.resolve(__dirname, "src", "app")
+            },
+            {
+                test: /\.css$/,
+                loader: "raw!postcss",
+                include: path.resolve(__dirname, "src", "app")
+            },
+
+            // Fonts
+            {
+                test: /\.(woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: "file?context=src/&name=[path][name].[ext]?[hash]",
+                include: path.resolve(__dirname, "src", "font")
             },
 
             // HTML
@@ -64,10 +76,17 @@ function buildConfiguration() {
                 exclude: path.resolve(__dirname, "src", "web")
             },
 
+            // Images
+            {
+                test: /\.(gif|ico|jpe?g|png|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: "url?limit=8192&context=src/&name=[path][name].[ext]?[hash]",
+                include: path.resolve(__dirname, "src", "img")
+            },
+
             // JSON
             {
                 test: /\.json$/,
-                loader: "json-loader"
+                loader: "json"
             }
         ]
     };
