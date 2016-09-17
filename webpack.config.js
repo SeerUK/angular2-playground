@@ -2,11 +2,14 @@ const webpack = require("webpack");
 const path = require("path");
 
 // Plugins
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const autoprefixer = require("autoprefixer");
 
 function buildConfiguration() {
     const config = {};
 
+    config.cache = true;
     config.debug = true;
     config.devtool = "eval-source-map";
 
@@ -41,9 +44,31 @@ function buildConfiguration() {
 
     config.module = {
         loaders: [
-            { test: /\.ts$/, loaders: [ "awesome-typescript-loader", "angular2-template-loader" ] },
-            { test: /\.css$/, loaders: [ "to-string-loader", "css-loader" ] },
-            { test: /\.html$/, loader: "raw-loader", exclude: path.resolve(__dirname, "src", "web") }
+            // Typescript
+            {
+                test: /\.ts$/,
+                loaders: [ "awesome-typescript-loader", "angular2-template-loader" ]
+            },
+
+            // CSS
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract("style", "css?sourceMap!postcss"),
+                exclude: path.resolve(__dirname, "src", "app")
+            },
+
+            // HTML
+            {
+                test: /\.html$/,
+                loader: "raw-loader",
+                exclude: path.resolve(__dirname, "src", "web")
+            },
+
+            // JSON
+            {
+                test: /\.json$/,
+                loader: "json-loader"
+            }
         ]
     };
 
@@ -64,6 +89,13 @@ function buildConfiguration() {
         new HtmlWebpackPlugin({
             template: "./src/web/index.html",
             chunksSortMode: "dependency"
+        }),
+        new ExtractTextPlugin("css/[name].[hash].css")
+    ];
+
+    config.postcss = [
+        autoprefixer({
+            browsers: ['last 2 version']
         })
     ];
 
