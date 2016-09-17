@@ -95,7 +95,7 @@ function buildConfiguration() {
 
     config.postcss = [
         autoprefixer({
-            browsers: ['last 2 version']
+            browsers: [ "last 2 version" ]
         })
     ];
 
