@@ -3,7 +3,7 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack --inline --colors --progress --display-error-details --display-cached",
-    "server": "webpack-dev-server --inline --colors --progress --display-error-details --port 8000",
+    "server": "webpack-dev-server --inline --colors --progress --display-error-details --display-cached --port 8000",
     "start": "npm run server",
     "watch": "npm run build -- --watch"
   },

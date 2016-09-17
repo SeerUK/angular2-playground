@@ -8,7 +8,7 @@ function buildConfiguration() {
     const config = {};
 
     config.debug = true;
-    config.devtool = "eval";
+    config.devtool = "eval-source-map";
 
     config.devServer = {
         contentBase: "./src/web",
