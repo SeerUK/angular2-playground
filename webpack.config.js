@@ -54,7 +54,7 @@ function buildConfiguration() {
             // CSS
             {
                 test: /\.css$/,
-                loader: "css-to-string!css!postcss",
+                loader: "stringify!css!postcss",
                 include: path.resolve(__dirname, "src", "app")
             },
             {
@@ -93,7 +93,7 @@ function buildConfiguration() {
             // SCSS
             {
                 test: /\.scss$/,
-                loader: "css-to-string!css!postcss!sass",
+                loader: "stringify!css!postcss!sass",
                 include: path.resolve(__dirname, "src", "app")
             },
             {
