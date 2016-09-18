@@ -1,12 +1,12 @@
 import { Component } from "@angular/core";
 
+require("../web/css/style.css");
+
 @Component({
     selector: "app",
-    template: `
-        <div>
-            Hello, World!
-            <img src="${require('img/stock/pexels-photo-54278.jpeg')}" alt="">
-        </div>
-    `
+    templateUrl: "./app.component.html",
+    styleUrls: [
+        "./app.component.scss"
+    ]
 })
 export class AppComponent{}

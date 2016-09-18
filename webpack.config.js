@@ -5,6 +5,7 @@ const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const autoprefixer = require("autoprefixer");
+const extractCss = new ExtractTextPlugin("css/[name].css?[hash]");
 
 function buildConfiguration() {
     const config = {};
@@ -28,9 +29,9 @@ function buildConfiguration() {
 
     config.output = {
         path: path.resolve(__dirname, "dist"),
-        filename: "js/[name].bundle.js",
-        sourceMapFilename: "js/[name].map",
-        chunkFilename: "js/[id].chunk.js"
+        filename: "js/[name].bundle.js?[hash]",
+        sourceMapFilename: "js/[name].map?[hash]",
+        chunkFilename: "js/[id].chunk.js?[hash]"
     };
 
     config.resolve = {
@@ -53,41 +54,53 @@ function buildConfiguration() {
             // CSS
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract("style", "css?sourceMap!postcss"),
-                exclude: path.resolve(__dirname, "src", "app")
+                loader: "css-to-string!css!postcss",
+                include: path.resolve(__dirname, "src", "app")
             },
             {
                 test: /\.css$/,
-                loader: "raw!postcss",
-                include: path.resolve(__dirname, "src", "app")
+                loader: extractCss.extract("css?sourceMap!postcss", { publicPath: "../" }),
+                exclude: path.resolve(__dirname, "src", "app")
             },
 
             // Fonts
             {
                 test: /\.(woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: "file?context=src/&name=[path][name].[ext]?[hash]",
-                include: path.resolve(__dirname, "src", "font")
+                loader: "file?context=src/web/&name=[path][name].[ext]?[hash]",
+                include: path.resolve(__dirname, "src", "web", "font")
             },
 
             // HTML
             {
                 test: /\.html$/,
-                loader: "raw-loader",
+                loader: "html",
                 exclude: path.resolve(__dirname, "src", "web")
             },
 
             // Images
             {
                 test: /\.(gif|ico|jpe?g|png|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: "url?limit=8192&context=src/&name=[path][name].[ext]?[hash]",
-                include: path.resolve(__dirname, "src", "img")
+                loader: "url?limit=8192&context=src/web/&name=[path][name].[ext]?[hash]",
+                include: path.resolve(__dirname, "src", "web", "img")
             },
 
             // JSON
             {
                 test: /\.json$/,
                 loader: "json"
-            }
+            },
+
+            // SCSS
+            {
+                test: /\.scss$/,
+                loader: "css-to-string!css!postcss!sass",
+                include: path.resolve(__dirname, "src", "app")
+            },
+            {
+                test: /\.scss$/,
+                loader: extractCss.extract("css?sourceMap!postcss!sass", { publicPath: "../" }),
+                exclude: path.resolve(__dirname, "src", "app")
+            },
         ]
     };
 
@@ -109,7 +122,7 @@ function buildConfiguration() {
             template: "./src/web/index.html",
             chunksSortMode: "dependency"
         }),
-        new ExtractTextPlugin("css/[name].[hash].css")
+        extractCss
     ];
 
     config.postcss = [
