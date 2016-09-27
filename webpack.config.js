@@ -12,7 +12,7 @@ function buildConfiguration() {
 
     config.cache = true;
     config.debug = true;
-    config.devtool = "eval-source-map";
+    config.devtool = "cheap-module-source-map";
 
     config.devServer = {
         contentBase: "./src/web",
