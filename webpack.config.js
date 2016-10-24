@@ -52,22 +52,26 @@ function buildConfiguration() {
             },
 
             // CSS
+            // App CSS
             {
                 test: /\.css$/,
-                loader: "to-string!css!postcss",
+                loader: "to-string!css!postcss!resolve-url",
                 include: path.resolve(__dirname, "src", "app")
             },
+            // Other CSS
             {
                 test: /\.css$/,
-                loader: extractCss.extract("css?sourceMap!postcss", { publicPath: "../" }),
+                loader: extractCss.extract("to-string!css?sourceMap!postcss!resolve-url", {
+                    publicPath: "../"
+                }),
                 exclude: path.resolve(__dirname, "src", "app")
             },
 
             // Fonts
             {
-                test: /\.(woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: "file?context=src/web/&name=[path][name].[ext]?[hash]",
-                include: path.resolve(__dirname, "src", "web", "font")
+                test: /\.(woff|woff2|ttf|eot)$/,
+                loader: "file?context=src/public/&name=[path][name].[hash].[ext]",
+                include: path.resolve(__dirname, "src", "web")
             },
 
             // HTML
@@ -79,9 +83,9 @@ function buildConfiguration() {
 
             // Images
             {
-                test: /\.(gif|ico|jpe?g|png|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: "url?limit=8192&context=src/web/&name=[path][name].[ext]?[hash]",
-                include: path.resolve(__dirname, "src", "web", "img")
+                test: /\.(gif|ico|jpe?g|png|svg)$/,
+                loader: "url?limit=8192&context=src/web/&name=[path][name].[hash].[ext]",
+                include: path.resolve(__dirname, "src", "web")
             },
 
             // JSON
@@ -91,14 +95,18 @@ function buildConfiguration() {
             },
 
             // SCSS
+            // App SCSS
             {
                 test: /\.scss$/,
-                loader: "to-string!css!postcss!sass",
+                loader: "to-string!css!postcss!resolve-url!sass?sourceMap",
                 include: path.resolve(__dirname, "src", "app")
             },
+            // Other SCSS
             {
                 test: /\.scss$/,
-                loader: extractCss.extract("css?sourceMap!postcss!sass", { publicPath: "../" }),
+                loader: extractCss.extract("to-string!css!postcss!resolve-url!sass?sourceMap", {
+                    publicPath: "../"
+                }),
                 exclude: path.resolve(__dirname, "src", "app")
             },
         ]
