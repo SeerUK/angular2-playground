@@ -7,11 +7,48 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const autoprefixer = require("autoprefixer");
 const extractCss = new ExtractTextPlugin("css/[name].css?[hash]");
 
+const postCssLoader = {
+    loader: "postcss",
+    options: {
+        plugins: function() {
+            return [
+                autoprefixer({
+                    browsers: [ "last 2 version" ]
+                })
+            ];
+        }
+    }
+};
+
+const cssLoaders = [
+    "to-string",
+    {
+        loader: "css",
+        options: {
+            sourceMap: true
+        }
+    },
+    // postCssLoader,
+    "resolve-url"
+];
+
+const scssLoaders = [
+    "to-string",
+    "css",
+    // postCssLoader,
+    "resolve-url",
+    {
+        loader: "sass",
+        options: {
+            sourceMap: true
+        }
+    }
+];
+
 function buildConfiguration() {
     const config = {};
 
     config.cache = true;
-    config.debug = true;
     config.devtool = "cheap-module-source-map";
 
     config.devServer = {
@@ -22,9 +59,9 @@ function buildConfiguration() {
     };
 
     config.entry = {
-        "polyfills": "./src/polyfills.browser.ts",
-        "vendor": "./src/vendor.browser.ts",
-        "main": "./src/main.browser.ts"
+        "polyfills": "./src/polyfills.ts",
+        "vendor": "./src/vendor.ts",
+        "main": "./src/main.ts"
     };
 
     config.output = {
@@ -35,9 +72,8 @@ function buildConfiguration() {
     };
 
     config.resolve = {
-        cache: true,
-        root: [ path.join(__dirname, "src") ],
-        extensions: [ "", ".ts", ".js", ".css", ".html" ],
+        modules: [ "node_modules", path.join(__dirname, "src") ],
+        extensions: [ ".ts", ".js", ".css", ".html" ],
         alias: {
             "app": "src/app"
         }
@@ -55,15 +91,13 @@ function buildConfiguration() {
             // App CSS
             {
                 test: /\.css$/,
-                loader: "to-string!css!postcss!resolve-url",
+                loader: cssLoaders,
                 include: path.resolve(__dirname, "src", "app")
             },
             // Other CSS
             {
                 test: /\.css$/,
-                loader: extractCss.extract("to-string!css?sourceMap!postcss!resolve-url", {
-                    publicPath: "../"
-                }),
+                loader: extractCss.extract({ loader: cssLoaders, publicPath: "../" }),
                 exclude: path.resolve(__dirname, "src", "app")
             },
 
@@ -98,13 +132,14 @@ function buildConfiguration() {
             // App SCSS
             {
                 test: /\.scss$/,
-                loader: "to-string!css!postcss!resolve-url!sass?sourceMap",
+                loader: scssLoaders,
                 include: path.resolve(__dirname, "src", "app")
             },
             // Other SCSS
             {
                 test: /\.scss$/,
-                loader: extractCss.extract("to-string!css!postcss!resolve-url!sass?sourceMap", {
+                loader: extractCss.extract({
+                    loader: scssLoaders,
                     publicPath: "../"
                 }),
                 exclude: path.resolve(__dirname, "src", "app")
@@ -113,7 +148,6 @@ function buildConfiguration() {
     };
 
     config.node = {
-        global: "window",
         crypto: "empty",
         process: true,
         module: false,
@@ -122,7 +156,7 @@ function buildConfiguration() {
     };
 
     config.plugins = [
-        new webpack.optimize.OccurenceOrderPlugin(true),
+        new webpack.optimize.OccurrenceOrderPlugin(true),
         new webpack.optimize.CommonsChunkPlugin({
             name: [ "main", "vendor", "polyfills" ]
         }),
@@ -131,12 +165,6 @@ function buildConfiguration() {
             chunksSortMode: "dependency"
         }),
         extractCss
-    ];
-
-    config.postcss = [
-        autoprefixer({
-            browsers: [ "last 2 version" ]
-        })
     ];
 
     return config;
